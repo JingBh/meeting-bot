@@ -69,7 +69,7 @@ question("Repo to watch: ", (data) => {
   octokit.repos.get({
     owner, repo
   }).then(({ data }) => {
-    sendMessage(`这里是 MeetingBot，目前已启用 github.js，将为您提供 GitHub 最新动态 ~\n\n当前正在关注：${data.full_name}\n${data.description}`)
+    sendMessage(`这里是 MeetingBot，目前已启用 github.js，将为您提供 GitHub 最新动态 ~\n\n当前正在追踪：${data.full_name}\n${data.description}`)
 
     octokit.repos.listBranches({
       owner, repo,
@@ -90,7 +90,7 @@ question("Repo to watch: ", (data) => {
         }, 500 * i, owner, repo, branch.name)
       }
 
-      sendMessage(`查询到 ${branches.length} 个分支，分别为 ${branches.join("、")}，已开启追踪。`)
+      sendMessage(`查询到 ${branches.length} 个分支，分别为 ${branches.join("、")}，正在追踪。`)
 
     }).catch(console.error)
 
