@@ -33,21 +33,26 @@ function fetchCommits(owner, repo, branch) {
 
   octokit.repos.listCommits(options).then(({ data }) => {
     const queue = []
+    let firstQuery = false
 
     for (let i in data) {
       let commit = data[i]
 
       commit.branch = branch
 
-      if (!lastUpdate[branch]) {
+      if (lastUpdate[branch]) {
+        queue.unshift(commit)
+      } else firstQuery = true
+
+      if (firstQuery) {
         lastUpdate[branch] = commit.commit.author.date
         break
-
-      } else queue.unshift(commit)
+      }
     }
 
     for (let commit of queue) {
-      const commitTime = moment(commit.commit.author.date, moment.ISO_8601).fromNow()
+      const commitTimeRaw = lastUpdate[branch] = commit.commit.author.date
+      const commitTime = moment(commitTimeRaw, moment.ISO_8601).fromNow()
       const commitHash = commit.sha.substring(0, 6)
       sendMessage(`${commitTime} ${commit.commit.author.name} 在 ${commit.branch} 分支创建了 commit ${commitHash}：${commit.commit.message}`)
     }
@@ -61,7 +66,7 @@ function fetchCommits(owner, repo, branch) {
 
     } else console.error(error)
   }).finally(() => {
-    // console.log(`Updated ${branch} since ${options.since}`)
+    console.log(`Updated ${branch} since ${options.since}`)
   })
 }
 
