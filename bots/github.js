@@ -37,6 +37,8 @@ function fetchCommits(owner, repo, branch) {
     for (let i in data) {
       let commit = data[i]
 
+      commit.branch = branch
+
       if (!lastUpdate[branch]) {
         lastUpdate[branch] = commit.commit.author.date
         break
@@ -45,9 +47,9 @@ function fetchCommits(owner, repo, branch) {
     }
 
     for (let commit of queue) {
-      const commitTime = moment(commit.commit.author.date, moment.ISO_8601).format('LTS')
+      const commitTime = moment(commit.commit.author.date, moment.ISO_8601).fromNow()
       const commitHash = commit.sha.substring(0, 6)
-      sendMessage(`${commit.commit.author.name} 在 ${commitTime} 创建了 commit ${commitHash}：\n${commit.commit.message}`)
+      sendMessage(`${commitTime} ${commit.commit.author.name} 在 ${commit.branch} 分支创建了 commit ${commitHash}：${commit.commit.message}`)
     }
   }).catch((error) => {
 
